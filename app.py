@@ -99,6 +99,8 @@ def calculate_score(symbol):
         return {"Symbol": symbol, "Error": str(e)}
 
 # ----- Generate AI Insights  -----
+client = openai.OpenAI(api_key=st.secrets["OPEN_AI_KEY"])
+
 def get_ai_insights(result_dict):
     prompt = f"""
 You are a trading assistant analyzing stock indicators and price data.
@@ -123,7 +125,7 @@ Answer the following clearly and concisely:
 """
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a professional trading assistant."},
@@ -132,7 +134,7 @@ Answer the following clearly and concisely:
             temperature=0.7,
             max_tokens=500
         )
-        return response.choices[0].message["content"]
+        return response.choices[0].message.content
     except Exception as e:
         return f"⚠️ Error generating AI insights: {e}"
 
