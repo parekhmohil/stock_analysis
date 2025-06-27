@@ -160,11 +160,15 @@ flag_cols = ['Score %', 'Decision', 'Flag EMA20', 'Flag EMA50', 'Flag Fib', 'Fla
 
 # Main indicators table
 st.subheader("📊 Technical Indicators")
-st.table(df[main_cols])
+table = df[main_cols].copy()
+table.index = [''] * len(table)
+st.dataframe(table, use_container_width=True)
 
 # Decision flags table
 st.subheader("✅ Signal Flags")
-st.table(df[flag_cols])
+flag_table = df[flag_cols].copy()
+flag_table.index = [''] * len(flag_table)
+st.dataframe(flag_table, use_container_width=True)
 
 
 # ----- Chart Plotting -----
