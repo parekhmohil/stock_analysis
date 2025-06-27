@@ -141,8 +141,21 @@ Answer the following clearly and concisely:
 
 # Run for selected stock
 result = calculate_score(selected)
-st.subheader("📋 Indicator Summary Table")
-st.dataframe(pd.DataFrame([result]))
+st.subheader("📋 Summary Table")
+
+# Split out flag columns
+df = pd.DataFrame([result])
+main_cols = ['Symbol', 'Price', 'EMA20', 'EMA50', 'Fib 38.2%', 'Fib 61.8%', 'RSI', 'Volume (M)', 'Avg Vol (M)']
+flag_cols = ['Score %', 'Decision', 'Flag EMA20', 'Flag EMA50', 'Flag Fib', 'Flag Volume', 'Flag RSI']
+
+# Main indicators table
+st.subheader("📊 Technical Indicators")
+st.dataframe(df[main_cols], use_container_width=True)
+
+# Decision flags table
+st.subheader("✅ Signal Flags")
+st.dataframe(df[flag_cols], use_container_width=True)
+
 
 # ----- Chart Plotting -----
 st.subheader("📈 Chart with EMA + Fibonacci")
