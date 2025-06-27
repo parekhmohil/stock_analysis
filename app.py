@@ -2,6 +2,10 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
+import openai
+
+# Set up OpenAI API key from GitHub Secrets
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # ----- Setup -----
 st.set_page_config(page_title="📊 Trading Dashboard", layout="centered")
@@ -94,6 +98,45 @@ def calculate_score(symbol):
     except Exception as e:
         return {"Symbol": symbol, "Error": str(e)}
 
+# ----- Generate AI Insights  -----
+def get_ai_insights(result_dict):
+    prompt = f"""
+You are a trading assistant analyzing stock indicators and price data.
+
+Stock Symbol: {result_dict['Symbol']}
+Current Price: {result_dict['Price']}
+EMA20: {result_dict['EMA20']}
+EMA50: {result_dict['EMA50']}
+RSI: {result_dict['RSI']}
+Fibonacci 38.2%: {result_dict['Fib 38.2%']}
+Fibonacci 61.8%: {result_dict['Fib 61.8%']}
+Volume: {result_dict['Volume (M)']}M
+Avg Volume: {result_dict['Avg Vol (M)']}M
+
+Answer the following clearly and concisely:
+
+1. Overall analysis of this stock
+2. Is it a good time to buy? Why?
+3. Suggested entry and exit price range
+4. Any known recent news (if not available, say so)
+5. Final AI decision: Buy or Sell, and give a reason in one line
+"""
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are a professional trading assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=500
+        )
+        return response.choices[0].message["content"]
+    except Exception as e:
+        return f"⚠️ Error generating AI insights: {e}"
+
+
 # Run for selected stock
 result = calculate_score(selected)
 st.subheader("📋 Indicator Summary Table")
@@ -134,3 +177,11 @@ ax.set_ylabel("Price")
 ax.legend()
 ax.grid(True)
 st.pyplot(fig)
+
+# ----- AI Insights -----
+st.subheader("🧠 AI Insights")
+
+if st.button("Generate AI Insights"):
+    with st.spinner("Thinking..."):
+        insights = get_ai_insights(result)
+    st.markdown(insights)
