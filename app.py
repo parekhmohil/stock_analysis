@@ -12,8 +12,18 @@ st.set_page_config(page_title="📊 Trading Dashboard", layout="centered")
 st.title("📊 EMA + RSI + Fibonacci Trading Analysis")
 
 # List of stocks
-symbols = ["TSLA", "AMD", "NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "VOO", "QQQ", "META", "NFLX", "SARDY", "AMC", "PYPL", "CAT", "NKE", "VOR"]
-selected = st.selectbox("Choose a stock:", symbols)
+us_stocks = ["TSLA", "AMD", "NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "VOO", "QQQ", "META", "NFLX", "SARDY", "AMC", "PYPL", "CAT", "NKE", "VOR"]
+india_stocks = ["RELIANCE.NS", "INFY.NS", "TCS.NS", "HDFCBANK.NS", "ICICIBANK.NS", "ITC.NS", "SBIN.NS", "WIPRO.NS"]
+
+market = st.radio("Select Market", ["US", "India"], horizontal=True)
+
+if market == "US":
+    stock_list = us_stocks
+else:
+    stock_list = india_stocks
+
+selected = st.selectbox("Choose a stock:", stock_list)
+
 
 # ----- Score Calculation -----
 def calculate_score(symbol):
