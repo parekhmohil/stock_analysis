@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import openai
 
 # Set up OpenAI API key from GitHub Secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+openai.api_key = st.secrets["OPEN_AI_KEY"]
 
 # ----- Setup -----
 st.set_page_config(page_title="📊 Trading Dashboard", layout="centered")
