@@ -17,7 +17,7 @@ india_stocks = ["RELIANCE.NS", "INFY.NS", "TCS.NS", "HDFCBANK.NS", "ICICIBANK.NS
 
 market = st.radio("Select Market", ["🇺🇸 US", "🇮🇳 India"], horizontal=True)
 
-if market == "US":
+if market == "🇺🇸 US":
     stock_list = us_stocks
 else:
     stock_list = india_stocks
