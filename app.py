@@ -15,7 +15,7 @@ st.title("📊 EMA + RSI + Fibonacci Trading Analysis")
 us_stocks = ["TSLA", "AMD", "NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "VOO", "QQQ", "META", "NFLX", "SARDY", "AMC", "PYPL", "CAT", "NKE", "VOR"]
 india_stocks = ["RELIANCE.NS", "INFY.NS", "TCS.NS", "HDFCBANK.NS", "ICICIBANK.NS", "ITC.NS", "SBIN.NS", "WIPRO.NS"]
 
-market = st.radio("Select Market", ["US", "India"], horizontal=True)
+market = st.radio("Select Market", ["🇺🇸 US", "🇮🇳 India"], horizontal=True)
 
 if market == "US":
     stock_list = us_stocks
