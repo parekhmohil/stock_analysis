@@ -3,7 +3,7 @@ import yfinance as yf
 import openai
 
 from indicators.indicators import calculate_indicators
-from signal.decision import generate_signal
+from trading_signal.decision import generate_signal
 from ai.insights import get_ai_insights
 from display.tables import show_indicator_table, show_flag_table
 from display.chart import show_chart
