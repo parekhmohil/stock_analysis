@@ -51,14 +51,17 @@ try:
         show_flag_table(result)
 
     # Show chart
+    st.markdown("---")
+    st.subheader("📈 Chart")
     show_chart(symbol)
 
     # AI Insights
+    st.markdown("---")
     st.subheader("🧠 AI Insights")
     if st.button("Generate AI Insights"):
         with st.spinner("Thinking..."):
             insights = get_ai_insights(result, st.secrets["OPEN_AI_KEY"])
-        st.markdown(insights)
+        st.markdown(insights, unsafe_allow_html = True)
 
 except Exception as e:
     st.error(f"Something went wrong: {e}")
