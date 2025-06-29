@@ -5,6 +5,18 @@ def show_indicator_table(result: dict):
     st.subheader("📊 Technical Indicators")
 
     df = pd.DataFrame([result])
+    df = df.rename(columns={
+        "symbol": "Symbol",
+        "price": "Price",
+        "ema20": "EMA20",
+        "ema50": "EMA50",
+        "fib2m_382": "Fib 38.2%",
+        "fib2m_618": "Fib 61.8%",
+        "rsi": "RSI",
+        "volume": "Volume (M)",
+        "avg_volume": "Avg Vol (M)"
+    })
+
     main_cols = [
         'Symbol', 'Price', 'EMA20', 'EMA50',
         'Fib 38.2%', 'Fib 61.8%', 'RSI',
@@ -14,7 +26,7 @@ def show_indicator_table(result: dict):
     table = df[main_cols].copy()
     table.index = [''] * len(table)
     st.dataframe(table, use_container_width=True)
-
+    
 def show_flag_table(result: dict):
     st.subheader("✅ Signal Flags")
 
