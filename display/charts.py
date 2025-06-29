@@ -58,7 +58,7 @@ def show_chart(symbol: str):
             x=data_1m.index,
             y=data_1m["Close"],  # ✅ use data_1m, not `data`
             mode="lines",
-            line=dict(color="white", width=2),
+            line=dict(color="red", width=2),
             name="Price Line"
         ))
 
