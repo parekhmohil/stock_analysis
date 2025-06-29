@@ -13,7 +13,7 @@ from utils.stock_selector import load_stock_list
 openai.api_key = st.secrets["OPEN_AI_KEY"]
 
 # Set up page
-st.set_page_config(page_title="📊 Trading Dashboard", layout="centered")
+st.set_page_config(page_title="📊 Trading Dashboard", layout="wide")
 st.title("📊 EMA + RSI + Fibonacci Trading Analysis")
 
 # Select Market and Stock
@@ -42,8 +42,13 @@ try:
 
     # Show tables
     #st.write("DEBUG: Result keys", list(result.keys()))
-    show_indicator_table(result)
-    show_flag_table(result)
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        show_indicator_table(result)
+
+    with col2:
+        show_flag_table(result)
 
     # Show chart
     show_chart(symbol)
