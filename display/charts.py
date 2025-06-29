@@ -54,13 +54,16 @@ def show_chart(symbol: str):
             name="Candles"
         ))
     else:
-        fig.add_trace(go.Scatter(
-            x=data_1m.index,
-            y=data_1m["Close"],  # ✅ use data_1m, not `data`
-            mode="lines",
-            line=dict(color="red", width=2),
-            name="Price Line"
-        ))
+        for i in range(1, len(data_1m)):
+            color = "green" if data_1m["Close"].iloc[i] > data_1m["Close"].iloc[i - 1] else "red"
+            fig.add_trace(go.Scatter(
+                x=[data_1m.index[i - 1], data_1m.index[i]],
+                y=[data_1m["Close"].iloc[i - 1], data_1m["Close"].iloc[i]],
+                mode="lines",
+                line=dict(color=color, width=2),
+                name="Price" if i == 1 else None,
+                showlegend=(i == 1)
+            ))
 
 
     # EMAs
