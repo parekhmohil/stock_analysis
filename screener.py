@@ -1,68 +1,76 @@
 import streamlit as st
 import pandas as pd
+from utils.stock_selector import load_stock_list
 from indicators.indicators import calculate_indicators
 from trading_signal.decision import generate_signal
 
-PREDEFINED_US_STOCKS = [
-    "AAPL", "MSFT", "AMZN", "GOOGL", "META",
-    "TSLA", "NVDA", "JPM", "V", "UNH",
-    "HD", "MA", "DIS", "BAC", "NFLX",
-    "ADBE", "PYPL", "NKE", "INTC", "CRM"
-]
-
-@st.cache_data(show_spinner="Loading indicators...")
-def get_predefined_stock_data():
+@st.cache_data(show_spinner="Loading stock data...")
+def get_all_stock_data():
+    stock_list = load_stock_list()
     results = []
-    for symbol in PREDEFINED_US_STOCKS:
+    
+    for _, row in stock_list.iterrows():
+        symbol = row["Symbol"]
         try:
             indicators = calculate_indicators(symbol)
-            if "Error" in indicators:
-                continue
             signal = generate_signal(indicators)
             combined = {**indicators, **signal}
             combined["Symbol"] = symbol
+            combined["Name"] = row["Name"]
+            combined["Market"] = row["Market"]
             results.append(combined)
-        except Exception as e:
-            print(f"Error loading {symbol}: {e}")
+        except:
             continue
+
     return pd.DataFrame(results)
 
 def run_screener():
-    st.title("📊 US Stock Screener (Predefined 20)")
+    st.title("📊 US Stock Screener (S&P 500 with Pagination)")
 
-    df = get_predefined_stock_data()
+    # Load and filter US stocks only
+    df = get_all_stock_data()
+    df = df[df["Market"] == "US"]
 
-    # 👉 Filter controls (1-2 row layout)
+    # Sort by volume and paginate
+    df = df.sort_values("Volume (M)", ascending=False).reset_index(drop=True)
+
+    page_size = 50
+    total_pages = len(df) // page_size + int(len(df) % page_size != 0)
+    page = st.number_input("Page", min_value=1, max_value=total_pages, value=1, step=1)
+
+    start = (page - 1) * page_size
+    end = start + page_size
+    paginated_df = df.iloc[start:end]
+
+    # Filters
     col1, col2, col3 = st.columns(3)
     with col1:
-        filter_rsi = st.checkbox("RSI 50–70")
-        filter_ema20 = st.checkbox("Price > EMA20")
+        rsi_filter = st.checkbox("RSI 50–70")
+        ema20_filter = st.checkbox("Price > EMA20")
     with col2:
-        filter_ema50 = st.checkbox("Price > EMA50")
-        filter_fib1m = st.checkbox("In Fib1M Zone")
+        ema50_filter = st.checkbox("Price > EMA50")
+        fib1m_filter = st.checkbox("In Fib 1M Zone")
     with col3:
-        filter_fib2m = st.checkbox("In Fib2M Zone")
+        fib2m_filter = st.checkbox("In Fib 2M Zone")
 
-    # 🧠 Apply filters
-    filtered = df.copy()
-
-    if filter_rsi:
-        filtered = filtered[(filtered["RSI"] >= 50) & (filtered["RSI"] <= 70)]
-    if filter_ema20:
-        filtered = filtered[filtered["Price"] > filtered["EMA20"]]
-    if filter_ema50:
-        filtered = filtered[filtered["Price"] > filtered["EMA50"]]
-    if filter_fib1m:
-        filtered = filtered[
-            (filtered["Price"] >= filtered["Fib1M 61.8%"]) & 
-            (filtered["Price"] <= filtered["Fib1M 38.2%"])
+    # Apply filters
+    if rsi_filter:
+        paginated_df = paginated_df[(paginated_df["RSI"] >= 50) & (paginated_df["RSI"] <= 70)]
+    if ema20_filter:
+        paginated_df = paginated_df[paginated_df["Price"] > paginated_df["EMA20"]]
+    if ema50_filter:
+        paginated_df = paginated_df[paginated_df["Price"] > paginated_df["EMA50"]]
+    if fib1m_filter:
+        paginated_df = paginated_df[
+            (paginated_df["Price"] >= paginated_df["Fib1M 61.8%"]) & 
+            (paginated_df["Price"] <= paginated_df["Fib1M 38.2%"])
         ]
-    if filter_fib2m:
-        filtered = filtered[
-            (filtered["Price"] >= filtered["Fib 61.8%"]) & 
-            (filtered["Price"] <= filtered["Fib 38.2%"])
+    if fib2m_filter:
+        paginated_df = paginated_df[
+            (paginated_df["Price"] >= paginated_df["Fib 61.8%"]) & 
+            (paginated_df["Price"] <= paginated_df["Fib 38.2%"])
         ]
 
-    # 📊 Show only existing columns
-    st.markdown(f"### Showing {len(filtered)} matching stocks")
-    st.dataframe(filtered, use_container_width=True)
+    # Final table
+    st.markdown(f"### Showing stocks {start + 1}–{min(end, len(df))} of {len(df)}")
+    st.dataframe(paginated_df, use_container_width=True)
