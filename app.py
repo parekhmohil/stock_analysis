@@ -14,7 +14,7 @@ openai.api_key = st.secrets["OPEN_AI_KEY"]
 
 # Set up page
 st.set_page_config(page_title="📊 Trading Dashboard", layout="wide")
-st.title("📊 EMA + RSI + Fibonacci Trading Analysis")
+st.title("📊 Trading Analysis")
 
 # Select Market and Stock
 # Load stock list from CSV
