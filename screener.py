@@ -22,7 +22,8 @@ def get_predefined_stock_data():
             combined = {**indicators, **signal}
             combined["Symbol"] = symbol
             results.append(combined)
-        except:
+        except Exception as e:
+            print(f"Error loading {symbol}: {e}")
             continue
     return pd.DataFrame(results)
 
@@ -31,50 +32,37 @@ def run_screener():
 
     df = get_predefined_stock_data()
 
-    # Make sure all required columns exist to prevent KeyErrors
-    for col in ["ema20", "ema50", "fib1m_618", "fib1m_382", "fib2m_618", "fib2m_382"]:
-        if col not in df.columns:
-            df[col] = None
-
-    # 🧪 Filter row layout
+    # 👉 Filter controls (1-2 row layout)
     col1, col2, col3 = st.columns(3)
     with col1:
         filter_rsi = st.checkbox("RSI 50–70")
         filter_ema20 = st.checkbox("Price > EMA20")
     with col2:
         filter_ema50 = st.checkbox("Price > EMA50")
-        filter_fib1m = st.checkbox("In Fib 1M Zone")
+        filter_fib1m = st.checkbox("In Fib1M Zone")
     with col3:
-        filter_fib2m = st.checkbox("In Fib 2M Zone")
+        filter_fib2m = st.checkbox("In Fib2M Zone")
 
     # 🧠 Apply filters
     filtered = df.copy()
 
     if filter_rsi:
-        filtered = filtered[(filtered["rsi"] >= 50) & (filtered["rsi"] <= 70)]
+        filtered = filtered[(filtered["RSI"] >= 50) & (filtered["RSI"] <= 70)]
     if filter_ema20:
-        filtered = filtered[filtered["price"] > filtered["ema20"]]
+        filtered = filtered[filtered["Price"] > filtered["EMA20"]]
     if filter_ema50:
-        filtered = filtered[filtered["price"] > filtered["ema50"]]
+        filtered = filtered[filtered["Price"] > filtered["EMA50"]]
     if filter_fib1m:
         filtered = filtered[
-            (filtered["price"] >= filtered["fib1m_618"]) & 
-            (filtered["price"] <= filtered["fib1m_382"])
+            (filtered["Price"] >= filtered["Fib1M 61.8%"]) & 
+            (filtered["Price"] <= filtered["Fib1M 38.2%"])
         ]
     if filter_fib2m:
         filtered = filtered[
-            (filtered["price"] >= filtered["fib2m_618"]) & 
-            (filtered["price"] <= filtered["fib2m_382"])
+            (filtered["Price"] >= filtered["Fib 61.8%"]) & 
+            (filtered["Price"] <= filtered["Fib 38.2%"])
         ]
 
-    # 📊 Final Table
+    # 📊 Show only existing columns
     st.markdown(f"### Showing {len(filtered)} matching stocks")
-    
-    # Gracefully handle missing columns
-    columns_to_show = ["Symbol", "price", "ema20", "ema50", "rsi", "Decision"]
-    available_columns = [col for col in columns_to_show if col in filtered.columns]
-    
-    st.dataframe(
-        filtered,
-        use_container_width=True
-    )
+    st.dataframe(filtered, use_container_width=True)
