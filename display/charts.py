@@ -15,7 +15,7 @@ def get_fib_levels(data, suffix=""):
     }
 
 def show_chart(symbol: str):
-    st.subheader("📈 Interactive Candlestick Chart with Indicators")
+    #st.subheader("📈 Interactive Candlestick Chart with Indicators")
 
     data_1m = yf.Ticker(symbol).history(period="1mo", interval="1d")
     data_2m = yf.Ticker(symbol).history(period="2mo", interval="1d")
