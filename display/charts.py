@@ -38,17 +38,30 @@ def show_chart(symbol: str):
     with col4:
         show_fib_2m = st.checkbox("Show Fib Levels (2M)", value=True)
 
+    # After checkbox layout
+    chart_type = st.radio("Select chart type", ["Candlestick", "Line"], horizontal=True)
+    
     fig = go.Figure()
+    
+    # Chart type logic
+    if chart_type == "Candlestick":
+        fig.add_trace(go.Candlestick(
+            x=data_1m.index,
+            open=data_1m["Open"],
+            high=data_1m["High"],
+            low=data_1m["Low"],
+            close=data_1m["Close"],
+            name="Candles"
+        ))
+    else:
+        fig.add_trace(go.Scatter(
+            x=data_1m.index,
+            y=data_1m["Close"],  # ✅ use data_1m, not `data`
+            mode="lines",
+            line=dict(color="white", width=2),
+            name="Price Line"
+        ))
 
-    # Candlestick
-    fig.add_trace(go.Candlestick(
-        x=data_1m.index,
-        open=data_1m["Open"],
-        high=data_1m["High"],
-        low=data_1m["Low"],
-        close=data_1m["Close"],
-        name="Candles"
-    ))
 
     # EMAs
     if show_ema20:
