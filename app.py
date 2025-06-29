@@ -6,7 +6,7 @@ from indicators.indicators import calculate_indicators
 from trading_signal.decision import generate_signal
 from ai.insights import get_ai_insights
 from display.tables import show_indicator_table, show_flag_table
-from display.chart import show_chart
+from display.charts import show_chart
 
 # Set up API Key
 openai.api_key = st.secrets["OPEN_AI_KEY"]
