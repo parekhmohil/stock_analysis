@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
-from utils.data_loader import load_stock_list
-from indicators.score import calculate_indicators
-from signal.decision import generate_signal
+from utils.stock_selector import load_stock_list
+from indicators.indicators import calculate_indicators
+from trading_signal.decision import generate_signal
 
 
 def run_screener():
