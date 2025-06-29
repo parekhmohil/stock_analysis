@@ -42,3 +42,29 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["Fib1M_618"] = fib_1mo["fib_618"]
 
     return df
+
+import yfinance as yf
+
+def calculate_indicators(symbol: str) -> dict:
+    stock = yf.Ticker(symbol)
+    df = stock.history(period="2mo", interval="1d")
+
+    if df.shape[0] < 20:
+        raise ValueError("Insufficient data")
+
+    df = add_indicators(df)
+
+    latest = df.iloc[-1]
+    return {
+        "Symbol": symbol,
+        "Price": round(latest["Close"], 2),
+        "EMA20": round(latest["EMA20"], 2),
+        "EMA50": round(latest["EMA50"], 2),
+        "RSI": round(latest["RSI"], 2),
+        "Volume (M)": round(latest["Volume"] / 1e6, 2),
+        "Avg Vol (M)": round(latest["AvgVol20"] / 1e6, 2),
+        "Fib 38.2%": round(latest["Fib2M_382"], 2),
+        "Fib 61.8%": round(latest["Fib2M_618"], 2),
+        "Fib1M_38.2%": round(latest["Fib1M_382"], 2),
+        "Fib1M_61.8%": round(latest["Fib1M_618"], 2)
+    }
