@@ -1,4 +1,4 @@
-def evaluate_trade_signal(metrics: dict) -> dict:
+def generate_signal(metrics: dict) -> dict:
     """
     Takes a dictionary of key metrics and returns:
     - score (0–100)
