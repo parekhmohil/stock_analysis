@@ -46,7 +46,7 @@ try:
     show_flag_table(result)
 
     # Show chart
-    show_chart(selected)
+    show_chart(symbol)
 
     # AI Insights
     st.subheader("🧠 AI Insights")
