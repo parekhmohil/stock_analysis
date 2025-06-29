@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
 import yfinance as yf
+import plotly.graph_objects as go
 import streamlit as st
 
 def get_fib_levels(data, suffix=""):
@@ -7,17 +7,15 @@ def get_fib_levels(data, suffix=""):
     low = data["Low"].min()
     move = high - low
     return {
-        f"Fib {suffix} 0.0%": (high, "green"),
         f"Fib {suffix} 23.6%": (high - 0.236 * move, "lightgreen"),
         f"Fib {suffix} 38.2%": (high - 0.382 * move, "gold"),
         f"Fib {suffix} 50.0%": (high - 0.5 * move, "orange"),
         f"Fib {suffix} 61.8%": (high - 0.618 * move, "tomato"),
         f"Fib {suffix} 78.6%": (high - 0.786 * move, "red"),
-        f"Fib {suffix} 100%": (low, "darkred"),
     }
 
 def show_chart(symbol: str):
-    st.subheader("📈 Chart with EMA + Fibonacci (1M & 2M)")
+    st.subheader("📈 Interactive Candlestick Chart with Indicators")
 
     data_1m = yf.Ticker(symbol).history(period="1mo", interval="1d")
     data_2m = yf.Ticker(symbol).history(period="2mo", interval="1d")
@@ -28,20 +26,55 @@ def show_chart(symbol: str):
     fib_1m = get_fib_levels(data_1m, "1M")
     fib_2m = get_fib_levels(data_2m, "2M")
 
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(data_1m.index, data_1m["Close"], label="Close", linewidth=2)
-    ax.plot(data_1m.index, data_1m["EMA20"], label="EMA 20", linestyle="--", color="blue")
-    ax.plot(data_1m.index, data_1m["EMA50"], label="EMA 50", linestyle="--", color="teal")
+    # Checkbox controls
+    show_ema20 = st.checkbox("Show EMA 20", value=True)
+    show_ema50 = st.checkbox("Show EMA 50", value=True)
+    show_fib_1m = st.checkbox("Show Fib Levels (1M)", value=True)
+    show_fib_2m = st.checkbox("Show Fib Levels (2M)", value=True)
 
-    for label, (level, color) in fib_1m.items():
-        ax.axhline(y=level, linestyle="--", alpha=0.4, color=color, label=label)
+    fig = go.Figure()
 
-    for label, (level, color) in fib_2m.items():
-        ax.axhline(y=level, linestyle="-.", alpha=0.7, color=color, label=label)
+    # Candlestick
+    fig.add_trace(go.Candlestick(
+        x=data_1m.index,
+        open=data_1m["Open"],
+        high=data_1m["High"],
+        low=data_1m["Low"],
+        close=data_1m["Close"],
+        name="Candles"
+    ))
 
-    ax.set_title(f"{symbol} - EMA + Fibonacci Levels")
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Price")
-    ax.legend(loc="lower right", fontsize="small")
-    ax.grid(True)
-    st.pyplot(fig)
+    # EMAs
+    if show_ema20:
+        fig.add_trace(go.Scatter(
+            x=data_1m.index,
+            y=data_1m["EMA20"],
+            line=dict(color="blue", width=1.5),
+            name="EMA 20"
+        ))
+    if show_ema50:
+        fig.add_trace(go.Scatter(
+            x=data_1m.index,
+            y=data_1m["EMA50"],
+            line=dict(color="green", width=1.5),
+            name="EMA 50"
+        ))
+
+    # Fibonacci levels
+    if show_fib_1m:
+        for label, (level, color) in fib_1m.items():
+            fig.add_hline(y=level, line=dict(color=color, dash="dot"), annotation_text=label)
+
+    if show_fib_2m:
+        for label, (level, color) in fib_2m.items():
+            fig.add_hline(y=level, line=dict(color=color, dash="dash"), annotation_text=label)
+
+    fig.update_layout(
+        height=600,
+        margin=dict(l=0, r=0, t=40, b=40),
+        xaxis_rangeslider_visible=False,
+        template="plotly_dark",
+        title=f"{symbol} - Interactive Chart"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
