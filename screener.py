@@ -75,6 +75,6 @@ def run_screener():
     available_columns = [col for col in columns_to_show if col in filtered.columns]
     
     st.dataframe(
-        filtered[available_columns],
+        filtered,
         use_container_width=True
     )
