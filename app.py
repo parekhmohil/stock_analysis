@@ -17,7 +17,7 @@ openai.api_key = st.secrets["OPEN_AI_KEY"]
 st.set_page_config(page_title="📊 Trading Dashboard", layout="wide")
 
 # Sidebar navigation
-page = st.sidebar.selectbox("Navigate", ["Trading Analysis", "Screener"])
+page = st.sidebar.radio("Navigate", ["Trading Analysis", "Screener"])
 
 if page == "Trading Analysis":
     st.title("📊 Trading Analysis")
