@@ -48,14 +48,27 @@ def show_chart(symbol: str):
     fig = go.Figure()
 
     # Candlestick
-    fig.add_trace(go.Candlestick(
-        x=data_1m.index,
-        open=data_1m["Open"],
-        high=data_1m["High"],
-        low=data_1m["Low"],
-        close=data_1m["Close"],
-        name="Candles"
-    ))
+    
+    fig = go.Figure()
+
+    if chart_type == "Candlestick":
+        fig.add_trace(go.Candlestick(
+            x=data.index,
+            open=data["Open"],
+            high=data["High"],
+            low=data["Low"],
+            close=data["Close"],
+            name="Candles"
+        ))
+    else:
+        fig.add_trace(go.Scatter(
+            x=data.index,
+            y=data["Close"],
+            mode="lines",
+            line=dict(color="black"),
+            name="Price Line"
+        ))
+
 
     # EMAs
     if show_ema20:
