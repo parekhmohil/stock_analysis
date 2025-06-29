@@ -26,11 +26,17 @@ def show_chart(symbol: str):
     fib_1m = get_fib_levels(data_1m, "1M")
     fib_2m = get_fib_levels(data_2m, "2M")
 
-    # Checkbox controls
-    show_ema20 = st.checkbox("Show EMA 20", value=True)
-    show_ema50 = st.checkbox("Show EMA 50", value=True)
-    show_fib_1m = st.checkbox("Show Fib Levels (1M)", value=True)
-    show_fib_2m = st.checkbox("Show Fib Levels (2M)", value=True)
+    # Create columns to display checkboxes in a row (4 columns here)
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        show_ema20 = st.checkbox("Show EMA 20", value=True)
+    with col2:
+        show_ema50 = st.checkbox("Show EMA 50", value=True)
+    with col3:
+        show_fib_1m = st.checkbox("Show Fib Levels (1M)", value=True)
+    with col4:
+        show_fib_2m = st.checkbox("Show Fib Levels (2M)", value=True)
 
     fig = go.Figure()
 
