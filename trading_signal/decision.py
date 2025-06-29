@@ -1,16 +1,9 @@
 def generate_signal(metrics: dict) -> dict:
-    """
-    Takes a dictionary of key metrics and returns:
-    - score (0–100)
-    - decision ("BUY" or "WAIT")
-    - all flags + rationale
-    """
-
     score = 0
     rationale = []
 
     # --- EMA50 ---
-    if metrics["price"] > metrics["ema50"]:
+    if metrics["Price"] > metrics["EMA50"]:
         score += 10
         rationale.append("🟢 Price > EMA50")
         ema50_flag = "🟢"
@@ -18,7 +11,7 @@ def generate_signal(metrics: dict) -> dict:
         ema50_flag = "🟡"
 
     # --- EMA20 proximity ---
-    proximity = abs(metrics["price"] - metrics["ema20"]) / metrics["ema20"] * 100
+    proximity = abs(metrics["Price"] - metrics["EMA20"]) / metrics["EMA20"] * 100
     if proximity <= 5:
         score += max(0, 15 - proximity * 3)
         rationale.append("🟢 Close to EMA20")
@@ -26,8 +19,8 @@ def generate_signal(metrics: dict) -> dict:
     else:
         ema20_flag = "🟡"
 
-    # --- Fibonacci zone (use 2-month) ---
-    if metrics["fib2m_618"] <= metrics["price"] <= metrics["fib2m_382"]:
+    # --- Fibonacci zone (2M) ---
+    if metrics["Fib 61.8%"] <= metrics["Price"] <= metrics["Fib 38.2%"]:
         score += 30
         rationale.append("🟢 Within 2M Fibonacci zone")
         fib_flag = "🟢"
@@ -35,15 +28,15 @@ def generate_signal(metrics: dict) -> dict:
         fib_flag = "🟡"
 
     # --- Volume ---
-    if metrics["volume"] >= metrics["avg_volume"]:
-        score += min((metrics["volume"] / metrics["avg_volume"]) * 20, 20)
+    if metrics["Volume (M)"] >= metrics["Avg Vol (M)"]:
+        score += min((metrics["Volume (M)"] / metrics["Avg Vol (M)"]) * 20, 20)
         rationale.append("🟢 Volume above average")
         volume_flag = "🟢"
     else:
         volume_flag = "🟡"
 
     # --- RSI ---
-    rsi = metrics["rsi"]
+    rsi = metrics["RSI"]
     if 50 <= rsi <= 70:
         score += 25
         rationale.append("🟢 RSI in healthy range")
@@ -54,7 +47,6 @@ def generate_signal(metrics: dict) -> dict:
     else:
         rsi_flag = "🟡"
 
-    # --- Final decision ---
     decision = "BUY" if score >= 70 else "WAIT"
 
     return {
