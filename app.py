@@ -26,7 +26,9 @@ selected = st.selectbox("Choose a stock:", stock_list)
 # Get data and calculate indicators
 try:
     result = calculate_indicators(selected)
-    result = generate_signal(result)
+    signal = generate_signal(result)
+    result.update(signal)
+
 
     # Show tables
     show_indicator_table(result)
