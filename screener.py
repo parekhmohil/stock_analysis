@@ -4,77 +4,67 @@ from utils.stock_selector import load_stock_list
 from indicators.indicators import calculate_indicators
 from trading_signal.decision import generate_signal
 
-
 def run_screener():
-    st.set_page_config(layout="wide")
-    st.title("📋 Technical Screener")
-    
-    # Load stock list (US + India)
+    st.set_page_config(page_title="📋 Stock Screener", layout="wide")
+    st.title("📋 Screener: Technical Indicators & Signals")
+
+    # Load full stock list (US + India)
     stock_list = load_stock_list()
-    market = st.radio("Select Market", ["US", "India"], horizontal=True)
-    filtered_list = stock_list[stock_list["Market"] == market]
-    
-    # Placeholder: Progress bar
-    progress = st.progress(0.0, text="Processing stocks...")
-    
-    # Collect results
+
+    st.info("This may take ~10–15 seconds to load all stock data...")
+
     results = []
-    for i, row in filtered_list.iterrows():
+
+    for i, row in stock_list.iterrows():
         symbol = row["Symbol"]
-    
         try:
             indicators = calculate_indicators(symbol)
             if "Error" in indicators:
                 continue
-    
+
             signal = generate_signal(indicators)
             result = {**indicators, **signal}
+            result["Symbol"] = symbol
+            result["Market"] = row["Market"]
+            result["Name"] = row["Name"]
             results.append(result)
-    
+
         except Exception as e:
             print(f"Error processing {symbol}: {e}")
             continue
-    
-        progress.progress((i + 1) / len(filtered_list), text=f"Processed {i+1} of {len(filtered_list)}")
-    
-    progress.empty()
-    
-    # Show table if available
-    if results:
-        df = pd.DataFrame(results)
-        st.subheader("🔎 Filter Stocks")
-    
-        # --- Create filter UI ---
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            rsi_min, rsi_max = st.slider("RSI Range", 0, 100, (40, 70))
-        with col2:
-            price_above_ema20 = st.checkbox("Price > EMA20", value=False)
-            price_above_ema50 = st.checkbox("Price > EMA50", value=False)
-        with col3:
-            vol_above_avg = st.checkbox("Volume > Avg Vol", value=False)
-        
-        # --- Apply filters ---
-        filtered_df = df.copy()
-        filtered_df = filtered_df[
-            (filtered_df["RSI"] >= rsi_min) &
-            (filtered_df["RSI"] <= rsi_max)
-        ]
-        
-        if price_above_ema20:
-            filtered_df = filtered_df[filtered_df["Price"] > filtered_df["EMA20"]]
-        
-        if price_above_ema50:
-            filtered_df = filtered_df[filtered_df["Price"] > filtered_df["EMA50"]]
-        
-        if vol_above_avg:
-            filtered_df = filtered_df[filtered_df["Volume (M)"] > filtered_df["Avg Vol (M)"]]
-        
-        # --- Display Results ---
-        st.markdown(f"### 🎯 {len(filtered_df)} stocks matched your criteria")
-        display_cols = ["Symbol", "Price", "RSI", "EMA20", "EMA50", "Volume (M)", "Avg Vol (M)", "Score %", "Decision"]
-        st.dataframe(filtered_df[display_cols], use_container_width=True)
-    
+
+    if not results:
+        st.warning("No valid stocks found.")
+        return
+
+    df = pd.DataFrame(results)
+
+    # Show full results first
+    st.markdown("### 📊 Full Screener Results")
+    st.dataframe(df, use_container_width=True)
+
+    # Filters
+    st.markdown("---")
+    st.markdown("### 🔍 Filter Stocks")
+
+    # RSI Range
+    rsi_range = st.slider("RSI Range", 0, 100, (0, 100))
+
+    # Trend filter (if available in your signal output)
+    if "Trend" in df.columns:
+        trend_options = df["Trend"].dropna().unique().tolist()
+        selected_trends = st.multiselect("Trend", trend_options)
     else:
-        st.warning("No valid stocks processed.")
+        selected_trends = []
+
+    # Filter logic
+    filtered_df = df[
+        (df["RSI"] >= rsi_range[0]) & (df["RSI"] <= rsi_range[1])
+    ]
+
+    if selected_trends:
+        filtered_df = filtered_df[filtered_df["Trend"].isin(selected_trends)]
+
+    # Show filtered results
+    st.markdown("### 🎯 Filtered Results")
+    st.dataframe(filtered_df, use_container_width=True)
