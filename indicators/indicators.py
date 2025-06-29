@@ -57,15 +57,15 @@ def calculate_indicators(symbol: str) -> dict:
     latest = df.iloc[-1]
 
     return {
-        "symbol": symbol,
-        "price": round(latest["Close"], 2),
-        "ema20": round(latest["EMA20"], 2),
-        "ema50": round(latest["EMA50"], 2),
-        "rsi": round(latest["RSI"], 2),
-        "volume": round(latest["Volume"], 2),
-        "avg_volume": round(latest["AvgVol20"], 2),
-        "fib2m_382": round(latest["Fib2M_382"], 2),
-        "fib2m_618": round(latest["Fib2M_618"], 2),
-        "fib1m_382": round(latest["Fib1M_382"], 2),
-        "fib1m_618": round(latest["Fib1M_618"], 2)
-    }
+    "Symbol": symbol,
+    "Price": round(latest["Close"], 2),
+    "EMA20": round(latest["EMA20"], 2),
+    "EMA50": round(latest["EMA50"], 2),
+    "RSI": round(latest["RSI"], 2),
+    "Volume (M)": round(latest["Volume"] / 1e6, 2),
+    "Avg Vol (M)": round(latest["AvgVol20"] / 1e6, 2),
+    "Fib 38.2%": round(latest["Fib2M_382"], 2),
+    "Fib 61.8%": round(latest["Fib2M_618"], 2),
+    "Fib1M 38.2%": round(latest["Fib1M_382"], 2),
+    "Fib1M 61.8%": round(latest["Fib1M_618"], 2)
+}
