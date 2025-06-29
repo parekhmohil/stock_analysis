@@ -69,7 +69,12 @@ def run_screener():
 
     # 📊 Final Table
     st.markdown(f"### Showing {len(filtered)} matching stocks")
+    
+    # Gracefully handle missing columns
+    columns_to_show = ["Symbol", "price", "ema20", "ema50", "rsi", "Decision"]
+    available_columns = [col for col in columns_to_show if col in filtered.columns]
+    
     st.dataframe(
-        filtered[["Symbol", "price", "ema20", "ema50", "rsi", "Decision"]],
+        filtered[available_columns],
         use_container_width=True
     )
