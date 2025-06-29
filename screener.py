@@ -31,14 +31,23 @@ def run_screener():
 
     df = get_predefined_stock_data()
 
-    with st.expander("⚙️ Filters"):
-        filter_rsi = st.checkbox("RSI between 50 and 70")
-        filter_ema20 = st.checkbox("Price > EMA20")
-        filter_ema50 = st.checkbox("Price > EMA50")
-        filter_fib1m = st.checkbox("Price in Fib 1M Zone")
-        filter_fib2m = st.checkbox("Price in Fib 2M Zone")
+    # Make sure all required columns exist to prevent KeyErrors
+    for col in ["ema20", "ema50", "fib1m_618", "fib1m_382", "fib2m_618", "fib2m_382"]:
+        if col not in df.columns:
+            df[col] = None
 
-    # Apply filters
+    # 🧪 Filter row layout
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        filter_rsi = st.checkbox("RSI 50–70")
+        filter_ema20 = st.checkbox("Price > EMA20")
+    with col2:
+        filter_ema50 = st.checkbox("Price > EMA50")
+        filter_fib1m = st.checkbox("In Fib 1M Zone")
+    with col3:
+        filter_fib2m = st.checkbox("In Fib 2M Zone")
+
+    # 🧠 Apply filters
     filtered = df.copy()
 
     if filter_rsi:
@@ -58,8 +67,9 @@ def run_screener():
             (filtered["price"] <= filtered["fib2m_382"])
         ]
 
+    # 📊 Final Table
     st.markdown(f"### Showing {len(filtered)} matching stocks")
     st.dataframe(
-        filtered[["Symbol", "price", "ema20", "ema50", "rsi", "Score %", "Decision"]],
+        filtered[["Symbol", "price", "ema20", "ema50", "rsi", "Decision"]],
         use_container_width=True
     )
