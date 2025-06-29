@@ -31,8 +31,7 @@ try:
 
 
     # Show tables
-    st.write("DEBUG: Result keys", list(result.keys()))
-    
+    #st.write("DEBUG: Result keys", list(result.keys()))
     show_indicator_table(result)
     show_flag_table(result)
 
