@@ -9,6 +9,7 @@ from display.tables import show_indicator_table, show_flag_table
 from display.charts import show_chart
 from utils.stock_selector import load_stock_list
 from screener import run_screener  # <-- this is your screener.py file
+from backtest import run_backtest_page
 
 # Set up API Key
 openai.api_key = st.secrets["OPEN_AI_KEY"]
@@ -17,7 +18,7 @@ openai.api_key = st.secrets["OPEN_AI_KEY"]
 st.set_page_config(page_title="📊 Trading Dashboard", layout="wide")
 
 # Sidebar navigation
-page = st.sidebar.radio("Navigate", ["Trading Analysis", "Screener"])
+page = st.sidebar.radio("Navigate", ["Trading Analysis", "Screener","Backtest"])
 
 if page == "Trading Analysis":
     st.title("📊 Trading Analysis")
@@ -60,3 +61,5 @@ if page == "Trading Analysis":
 
 elif page == "Screener":
     run_screener()
+elif page == "Backtest"
+    run_backtest_page()
