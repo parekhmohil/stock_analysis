@@ -9,7 +9,7 @@ from display.tables import show_indicator_table, show_flag_table
 from display.charts import show_chart
 from utils.stock_selector import load_stock_list
 from screener import run_screener  # <-- this is your screener.py file
-from backtest import run_backtest_page
+from backtest_page import run_backtest_page
 
 # Set up API Key
 openai.api_key = st.secrets["OPEN_AI_KEY"]
