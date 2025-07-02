@@ -61,5 +61,5 @@ if page == "Trading Analysis":
 
 elif page == "Screener":
     run_screener()
-elif page == "Backtest"
+elif page == "Backtest":
     run_backtest_page()
