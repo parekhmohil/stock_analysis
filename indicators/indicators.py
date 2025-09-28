@@ -25,7 +25,7 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     # EMA and RSI
-    df["EMA20"] = calculate_ema(df, 200)
+    df["EMA20"] = calculate_ema(df, 20)
     df["EMA50"] = calculate_ema(df, 50)
     df["RSI"] = calculate_rsi(df)
     df["AvgVol20"] = df["Volume"].rolling(window=20).mean()
